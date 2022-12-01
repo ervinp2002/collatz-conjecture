@@ -22,6 +22,9 @@ program collatz
     integer(kind = 16) :: sequence
     integer :: counter
 
+    numbers = (/0, 0, 0, 0, 0, 0, 0, 0, 0, 0 /)
+    length = (/0, 0, 0, 0, 0, 0, 0, 0, 0, 0 /)
+
     call get_command_argument(1, arg)
     read(arg, *) lower
     call get_command_argument(2, arg)
@@ -35,33 +38,41 @@ program collatz
 
     ! Iterative approach to find collatz sequence of integers within range. 
     counter = 1
-
     do current = lower, upper
         number = current
         sequence = 0
         call extendSequence(number, sequence)
+        temp = searchDuplicates(length, sequence)   ! Holds index of duplicate sequence length.
 
+        ! Handle the first 10 elements to be added to the array.
         if (counter < 10) then
-            if (searchDuplicates(numbers, length, current, sequence, counter) .eqv. .false.) then
-                numbers(counter) = current 
-                length(counter) = sequence 
+            if (temp == -1) then
+                numbers(counter) = current
+                length(counter) = sequence
                 counter = counter + 1
+            else 
+                if (current < numbers(temp)) then
+                    numbers(temp) = current - 1
+                end if
             end if
-
-            call bubble_sort(numbers, length)
         else 
-            if (searchDuplicates(numbers, length, current, sequence, counter) .eqv. .false.) then 
+            ! Every case afterwards. 
+            if (temp /= -1) then 
+                if (current < numbers(temp)) then
+                    numbers(temp) = current
+                end if  
+            else    
                 ! Push out minimum pair. 
                 temp = minloc(length, 1)
                 if (sequence > length(temp)) then 
                     length(temp) = sequence 
                     numbers(temp) = current
+                    counter = counter + 1
                 end if
-
-                call bubble_sort(numbers, length)
             end if
         end if
         
+        call bubble_sort(numbers, length)
     end do
 
     ! Sort based on sequence length.
@@ -90,14 +101,15 @@ program collatz
             integer(kind = 16), intent(inout) :: values(:)
 
             integer :: index
-            logical :: needs_swap = .true.
+            logical :: needs_swap
 
             integer(kind = 16) :: temp_key
             integer(kind = 16) :: temp_value
 
+            needs_swap = .true.
             do while (needs_swap .eqv. .true.)
                 needs_swap = .false.
-                do index = 1, size(keys)
+                do index = 1, size(values) - 1
                     if (values(index) < values(index + 1)) then
 
                         ! Temp variables to hold current.
@@ -113,10 +125,9 @@ program collatz
                         values(index + 1) = temp_value
 
                         needs_swap = .true.
-
                     end if
                 end do
-            end do
+            end do  
 
         end subroutine bubble_sort
 
@@ -140,24 +151,19 @@ program collatz
 
         end subroutine extendSequence
 
-        logical function searchDuplicates(numbers, length, number, sequence, counter)
+        integer function searchDuplicates(length, sequence)
             ! PRE: Parallel arrays, Collatz number, and its sequence length is passed in. 
             ! POST: Searches if there is a another number with the same sequence length in the array.
             implicit none 
 
-            integer(kind = 16), intent(inout) :: numbers(:)
             integer(kind = 16), intent(inout) :: length(:)
-            integer(kind = 16), intent(in) :: number
-            integer(kind = 16), intent(inout) :: sequence 
-            integer, intent(inout) :: counter
+            integer(kind = 16), intent(in) :: sequence 
             integer :: i
 
-            searchDuplicates = .false.
+            searchDuplicates = -1
             do i = 1, size(length)
-                if (length(i) == sequence .and. number < numbers(i)) then 
-                    numbers(i) = number
-                    counter = counter + 1
-                    searchDuplicates = .true.
+                if (length(i) == sequence) then
+                    searchDuplicates = i 
                     exit
                 end if
             end do
