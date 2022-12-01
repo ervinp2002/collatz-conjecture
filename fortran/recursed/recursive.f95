@@ -1,0 +1,175 @@
+! Ervin Pangilinan
+! CSC 330: Organization of Programming Languages - Fall 2022
+! Project 3: The Collatz Conjecture
+! Recursive Implementation in Fortran 95
+
+program recursive 
+    implicit none
+
+    ! For setting bounds of range and traversing range.
+    integer(kind = 16) :: lower
+    integer(kind = 16) :: upper
+    integer(kind = 16) :: temp
+    integer(kind = 16) :: current
+    character(len = 20) :: arg
+
+    ! Parallel arrays to hold Collatz numbers and their sequence length.
+    integer(kind = 16) :: numbers(10)
+    integer(kind = 16) :: length(10)
+
+    ! To be used for keeping track of number in Collatz sequence. 
+    integer(kind = 16) :: number
+    integer(kind = 16) :: sequence
+    integer :: counter
+
+    numbers = (/0, 0, 0, 0, 0, 0, 0, 0, 0, 0 /)
+    length = (/0, 0, 0, 0, 0, 0, 0, 0, 0, 0 /)
+
+    call get_command_argument(1, arg)
+    read(arg, *) lower
+    call get_command_argument(2, arg)
+    read(arg, *) upper
+
+    if (lower > upper) then
+        temp = lower
+        lower = upper
+        upper = temp
+    end if 
+
+    counter = 1
+    do current = lower, upper 
+        number = current 
+        sequence = extendSequence(number)           ! Recursive approach for finding Collatz sequence of integers within range.
+        temp = searchDuplicates(length, sequence)   ! Holds index of duplicate sequence length. 
+
+        ! Handle the first 10 elements to be added to the array.
+        if (counter < 10) then
+            if (temp == -1) then
+                numbers(counter) = current
+                length(counter) = sequence
+                counter = counter + 1
+            else 
+                ! Case for handling duplicates.
+                if (current < numbers(temp)) then
+                    numbers(temp) = current - 1
+                end if
+            end if
+        else 
+            ! Every case afterwards. 
+            if (temp /= -1) then 
+                ! Case for handling duplicates.
+                if (current < numbers(temp)) then
+                    numbers(temp) = current
+                end if  
+            else    
+                ! Push out minimum pair. 
+                temp = minloc(length, 1)
+                if (sequence > length(temp)) then 
+                    length(temp) = sequence 
+                    numbers(temp) = current
+                    counter = counter + 1
+                end if
+            end if
+        end if
+        
+        call bubble_sort(numbers, length)
+
+    end do
+
+    ! Sort based on sequence length.
+    call bubble_sort(numbers, length)
+    print *, "Sorted based on sequence length"
+    do counter = 1, size(length)
+        print "(2i10)", numbers(counter), length(counter)
+    end do
+
+    print *, ""
+
+    ! Sort based on integer size.
+    call bubble_sort(length, numbers)
+    print *, "Sorted based on integer size"
+    do counter = 1, size(length)
+        print "(2i10)", numbers(counter), length(counter)
+    end do
+
+    contains
+        recursive integer(kind = 16) function extendSequence(number) result(sequence)
+            ! PRE: Positive number within bounds and Collatz length are passed in. 
+            ! POST: Recursively calculates the Collatz sequence length of the original number. 
+            implicit none 
+
+            integer(kind = 16), intent(inout) :: number
+            if (number == 1) then
+                sequence = 0
+                return
+            else
+                if (mod(number, 2) == 0) then 
+                    number = number / 2
+                    sequence = 1 + extendSequence(number)
+                else 
+                    number = (3 * number) + 1
+                    sequence = 1 + extendSequence(number)
+                end if
+            end if
+
+        end function extendSequence
+
+        subroutine bubble_sort(keys, values)
+            ! PRE: Parallel arrays that are passed in are completely filled. 
+            ! POST: Sorts key array by values in descending order. 
+            implicit none
+
+            integer(kind = 16), intent(inout) :: keys(:)
+            integer(kind = 16), intent(inout) :: values(:)
+
+            integer :: index
+            logical :: needs_swap
+
+            integer(kind = 16) :: temp_key
+            integer(kind = 16) :: temp_value
+
+            needs_swap = .true.
+            do while (needs_swap .eqv. .true.)
+                needs_swap = .false.
+                do index = 1, size(values) - 1
+                    if (values(index) < values(index + 1)) then
+
+                        ! Temp variables to hold current.
+                        temp_key = keys(index)
+                        temp_value = values(index)
+
+                        ! Move the bigger key-value pair to the front.
+                        keys(index) = keys(index + 1)
+                        values(index) = values(index + 1)
+
+                        ! Move the smaller key-value pair to the back.
+                        keys(index + 1) =  temp_key
+                        values(index + 1) = temp_value
+
+                        needs_swap = .true.
+                    end if
+                end do
+            end do  
+
+        end subroutine bubble_sort
+
+        integer function searchDuplicates(length, sequence)
+            ! PRE: Array of sequence lengths and a Collatz sequence length is passed in. 
+            ! POST: Searches if there is a another number with the same sequence length in the array.
+            implicit none 
+
+            integer(kind = 16), intent(inout) :: length(:)
+            integer(kind = 16), intent(in) :: sequence 
+            integer :: i
+
+            searchDuplicates = -1
+            do i = 1, size(length)
+                if (length(i) == sequence) then
+                    searchDuplicates = i 
+                    exit
+                end if
+            end do
+
+        end function searchDuplicates
+
+end program recursive

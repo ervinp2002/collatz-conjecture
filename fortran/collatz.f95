@@ -41,7 +41,7 @@ program collatz
     do current = lower, upper
         number = current
         sequence = 0
-        call extendSequence(number, sequence)
+        call extendSequence(number, sequence)       ! Iterative approach to find collatz sequence of integers within range.
         temp = searchDuplicates(length, sequence)   ! Holds index of duplicate sequence length.
 
         ! Handle the first 10 elements to be added to the array.
@@ -51,6 +51,7 @@ program collatz
                 length(counter) = sequence
                 counter = counter + 1
             else 
+                ! Case for handling duplicates.
                 if (current < numbers(temp)) then
                     numbers(temp) = current - 1
                 end if
@@ -58,6 +59,7 @@ program collatz
         else 
             ! Every case afterwards. 
             if (temp /= -1) then 
+                ! Case for handling duplicates.
                 if (current < numbers(temp)) then
                     numbers(temp) = current
                 end if  
@@ -152,7 +154,7 @@ program collatz
         end subroutine extendSequence
 
         integer function searchDuplicates(length, sequence)
-            ! PRE: Parallel arrays, Collatz number, and its sequence length is passed in. 
+            ! PRE: Array of sequence lengths and a Collatz sequence length is passed in. 
             ! POST: Searches if there is a another number with the same sequence length in the array.
             implicit none 
 
