@@ -2,29 +2,26 @@
 Ervin Pangilinan
 CSC 330: Organization of Programming Languages - Fall 2022
 Project 3: The Collatz Conjecture
-Iterative Implementation in Rust
+Recursive Implementation in Rust
 */
 
 use std::env;
 use std::mem;
 
-// Iterative Solution
+// Recursive Solution
 fn extend_sequence(mut number: i64) -> i64 {
     // PRE: Collatz number is passed in. 
-    // POST: Changes the argument based on parity and returns the Collatz length. 
+    // POST: Changes the argument based on parity and recusively returns the Collatz length. 
 
-    let mut length: i64 = 0;
-    while number != 1 {
-        if number % 2 == 0 {
-            number /= 2;
-            length += 1;
-        } else {
-            number = (3 * number) + 1;
-            length += 1
-        }
+    if number == 1 {
+        return 0;
+    } else if number % 2 == 0 {
+        number /= 2;
+        return 1 + extend_sequence(number);
+    } else {
+        number = (3 * number) + 1;
+        return 1 + extend_sequence(number);
     }
-
-    return length;
 }
 
 fn search_duplicates(arr: &[i64], sequence: i64) -> i32 {
@@ -77,7 +74,7 @@ fn main() {
 
     for i in lower..upper {
         let current: i64 = i;
-        let sequence: i64 = extend_sequence(current);           // Iterative approach. 
+        let sequence: i64 = extend_sequence(current);            // Recursive approach. 
         let temp: i32 = search_duplicates(&lengths, sequence);  // Keeps track of index that holds duplicate Collatz length.
         if counter < 10 {
             // Handle the first 10 elements to be added to the parallel arrays.
