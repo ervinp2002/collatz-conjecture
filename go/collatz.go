@@ -1,6 +1,6 @@
 /*
 Ervin Pangilinan
-CSC 330: Organization of Programming Languages
+CSC 330: Organization of Programming Languages - Fall 2022
 Project 3: The Collatz Conjecture
 Iterative Implementation in Go
 */
@@ -148,7 +148,9 @@ func main() {
 		bubbleSort(numbers, lengths)
 		fmt.Println("Sorted based on sequence length")
 		for i := 0; i < len(numbers); i++ {
-			fmt.Println("\t", numbers[i], "\t", lengths[i])
+			if numbers[i] != 0 && lengths[i] != 0 {
+				fmt.Println("\t", numbers[i], "\t", lengths[i])
+			}
 		}
 		fmt.Println(" ")
 
@@ -156,8 +158,11 @@ func main() {
 		bubbleSort(lengths, numbers)
 		fmt.Println("Sorted based on integer size")
 		for i := 0; i < len(numbers); i++ {
-			fmt.Println("\t", numbers[i], "\t", lengths[i])
+			if numbers[i] != 0 && lengths[i] != 0 {
+				fmt.Println("\t", numbers[i], "\t", lengths[i])
+			}
 		}
+		fmt.Println(" ")
 
 	} else {
 		fmt.Println("Command line arguments are missing.")

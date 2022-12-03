@@ -81,7 +81,9 @@ program collatz
     call bubble_sort(numbers, length)
     print *, "Sorted based on sequence length"
     do counter = 1, size(length)
-        print "(2i10)", numbers(counter), length(counter)
+        if (numbers(counter) /= 0 .and. length(counter) /= 0) then
+            print "(2i10)", numbers(counter), length(counter)
+        end if
     end do
 
     print *, ""
@@ -90,8 +92,12 @@ program collatz
     call bubble_sort(length, numbers)
     print *, "Sorted based on integer size"
     do counter = 1, size(length)
-        print "(2i10)", numbers(counter), length(counter)
+        if (numbers(counter) /= 0 .and. length(counter) /= 0) then
+            print "(2i10)", numbers(counter), length(counter)
+        end if
     end do
+
+    print *, ""
 
     contains
         subroutine bubble_sort(keys, values)
