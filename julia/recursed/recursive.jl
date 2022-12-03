@@ -9,23 +9,20 @@ Recursive Implmentation in Julia
 
 using Printf
 
-# Iterative Solution
+# Recursive Solution
 function extendSequence(number)
     # PRE: Number in Collatz sequence in passed in. 
     # POST: Changes the argument based on parity and iteratively calculates Collatz length. 
 
-    length = 0
-    while number != 1
-        if number % 2 == 0
-            number /= 2
-            length += 1
-        else 
-            number = (3 * number) + 1
-            length += 1
-        end 
-    end 
-
-    return length
+    if number == 1
+        return 0
+    elseif number % 2 == 0
+        number /= 2
+        return 1 + extendSequence(number)
+    else 
+        number = (3 * number) + 1
+        return 1 + extendSequence(number)
+    end
 
 end
 
