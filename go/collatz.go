@@ -21,6 +21,7 @@ func swap(arg1 *int64, arg2 *int64) {
 	*arg2 = temp
 }
 
+// Iterative Solution 
 func extendSequence(number int64, length *int64) {
 	// PRE: Number in Collatz sequence is passed in. 
     // POST: Changes the argument based on parity and iteratively calculates Collatz length. 
@@ -107,7 +108,7 @@ func main() {
 			current = i 
 			sequence = 0 
 
-			extendSequence(i, &sequence)
+			extendSequence(i, &sequence)					// Iterative approach. 
 			temp = searchDuplicates(lengths, sequence)
 
 			if counter < 10 {
