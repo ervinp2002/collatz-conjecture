@@ -4,8 +4,8 @@
 
 Fortran 95
 
-    gfortran diffusion.f95
-    gfortran recursive.f95
+    gfortran diffusion.f95 -O2
+    gfortran recursive.f95 -O2
     ./a.out [lower bound] [upper bound]
 
 Rust
