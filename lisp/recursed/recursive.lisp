@@ -2,26 +2,16 @@
 ; Ervin Pangilinan
 ; CSC 330: Organization of Programming Languages - Fall 2022
 ; Project 3: The Collatz Conjecture
-; Iterative Implementation in Lisp
+; Recursive Implementation in Lisp
 
-; Iterative Solution
+; Recursive Solution
 (defun extendSequence (num)
     "PRE: Collatz number is passed in.
-     POST: Changes the argument based on parity and iteratively calculates Collatz length."
+     POST: Changes the argument based on parity and recursively calculates Collatz length."
 
-    (let ((n num) (len 0))
-        (loop
-            (if (= (mod n 2) 0)
-                (progn
-                    (setf n (/ n 2))
-                    (incf len)
-                )
-                (progn
-                    (setf n (+ (* 3 n) 1))
-                    (incf len)
-                ))
-            (when (= n 1) (return len))
-        )
+    (cond   ((= num 1) 0)
+            ((= (mod num 2) 0) (+ 1 (extendSequence (/ num 2))))
+            ((/= (mod num 2) 0) (+ 1 (extendSequence (+ (* 3 num) 1))))
     )
 )
 
@@ -96,7 +86,7 @@
     (setf counter 0)
     (loop 
         (setf n current)
-        (setf seqLen (extendSequence n))                    ; Iterative approach
+        (setf seqLen (extendSequence n))                    ; Recursive approach
         (setf temp (searchDuplicates lengths seqLen))       ; Keeps track of index that holds duplicate Collatz length. 
 
         (if (< counter 10)
